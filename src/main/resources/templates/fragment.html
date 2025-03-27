@@ -32,7 +32,7 @@
 						<img class="samuraitravel-logo me-1" th:src="@{/images/logo.png}" alt="SAMURAI Travel">
 					</a>
 					
-					<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-contorols="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+					<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 						<span class="navbar-toggler-icon"></span>
 					</button> 
 					
@@ -66,7 +66,7 @@
 							
 							<!-- 管理者であれば表示する -->
 							<li class="nav-item dropdown" sec:authorize="hasRole('ROLE_ADMIN')">
-								<a id="navbarDropdownAdmin" class="nav-link dropdown-toggle" href="#" role="botton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+								<a id="navbarDropdownAdmin" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
 									管理者メニュー
 								</a>
 								
@@ -99,6 +99,8 @@
 		
 		<!-- script要素の部品化 -->
 		<div th:fragment="scripts" th:remove="tag">
+			
+		<!-- Bootstrap -->
 			<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 		</div>
 	</body>

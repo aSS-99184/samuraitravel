@@ -8,7 +8,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 import com.example.samuraitravel.entity.User;
-import com.example.samuraitravel.security.VerificationTokenService;
+import com.example.samuraitravel.service.VerificationTokenService;
 
 @Component
 public class SignupEventListener {

@@ -32,8 +32,8 @@ public class UserDetailsImpl implements UserDetails {
 		return user.getEmail();
 	}
 	
-	@Override
 	// ロールのコレクションを返す
+	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities(){
 		return authorities;
 	}
@@ -51,6 +51,7 @@ public class UserDetailsImpl implements UserDetails {
 	}
 	
 	// ユーザーのパスワードが期限切れでなければtrueを返す
+	@Override
 	public boolean isCredentialsNonExpired() {
 		return true;
 	}

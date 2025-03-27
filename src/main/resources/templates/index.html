@@ -42,7 +42,7 @@
 								   <img th:if="${newHouse.getImageName()}" th:src="@{/storage/__${newHouse.getImageName()}__}" class="card-img-top samuraitravel-vertical-card-image" alt="店舗画像">
 								   <img th:unless="${newHouse.getImageName()}" th:src="@{/images/noImage.png}" class="card-img-top samuraitravel-vertical-card-image" alt="NO IMAGE">
 								   <div class="card-body">
-									   <h3 class="card-title" th:text="${newHouse.getAddress()}"></h3>
+									   <h3 class="card-title" th:text="${newHouse.getName()}"></h3>
 									   <p class="card-text mb-1">
 										   <small class="text-muted" th:text="${newHouse.getAddress()}"></small>
 									   </p>
@@ -63,7 +63,7 @@
 								   <tr>
 									   <th>北海道</th>
 									   <td>
-										   <a th:href="@{.houses?area=北海道}">北海道</a>
+										   <a th:href="@{/houses?area=北海道}">北海道</a>
 									   </td>
 								   </tr>
 								   <tr>
@@ -134,7 +134,7 @@
 									   <th>山陽・山陰</th>
 									   <td>
 										   <a th:href="@{/houses?area=鳥取県}" class="me-2">鳥取県</a>
-										   <a th:href="@{/houses?area=島根件}" class="me-2">島根県</a>
+										   <a th:href="@{/houses?area=島根県}" class="me-2">島根県</a>
 										   <a th:href="@{/houses?area=岡山県}" class="me-2">岡山県</a>
 										   <a th:href="@{/houses?area=広島県}" class="me-2">広島県</a>
 										   <a th:href="@{/houses?area=山口県}">山口県</a>

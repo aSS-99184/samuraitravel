@@ -15,8 +15,8 @@ import com.example.samuraitravel.entity.User;
 import com.example.samuraitravel.entity.VerificationToken;
 import com.example.samuraitravel.event.SignupEventPublisher;
 import com.example.samuraitravel.form.SignupForm;
-import com.example.samuraitravel.security.VerificationTokenService;
 import com.example.samuraitravel.service.UserService;
+import com.example.samuraitravel.service.VerificationTokenService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -45,15 +45,25 @@ public class AuthController {
 	}
 	
 	@PostMapping("/signup")
-	public String sinup(@ModelAttribute @Validated SignupForm signupForm, BindingResult bindingResult, RedirectAttributes redirectAttributes, HttpServletRequest httpServletRequest) {
+	public String signup(@ModelAttribute @Validated SignupForm signupForm, BindingResult bindingResult, RedirectAttributes redirectAttributes, HttpServletRequest httpServletRequest) {
 		// メールアドレスが登録済みであれば、BindingResultオブジェクトにエラー内容を追加する
 		if(userService.isEmailRegistered(signupForm.getEmail())) {
 			FieldError fieldError = new FieldError(bindingResult.getObjectName(), "email", "すでに登録済みのメールアドレスです。");	
+		
+		bindingResult.addError(fieldError);	
+		}
+		
+		// パスワードとパスワード（確認用）の入力値が一致しなければ、BindingResultオブジェクトにエラー内容を追加する
+		if(!userService.isSamePassword(signupForm.getPassword(), signupForm.getPasswordConfirmation())) {
+			FieldError fieldError = new FieldError
+			(bindingResult.getObjectName(),
+				"password", "パスワードが一致しません。");
+			
 			bindingResult.addError(fieldError);
 		}
 		
 		if(bindingResult.hasErrors()) {
-			return "suth/signup";
+			return "auth/signup";
 		}
 		
 		User createdUser = userService.create(signupForm);

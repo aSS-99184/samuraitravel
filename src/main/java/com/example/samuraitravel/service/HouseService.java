@@ -28,7 +28,7 @@ public class HouseService {
 		House house = new House();
 		MultipartFile imageFile = houseRegisterForm.getImageFile();
 		
-		if(imageFile.isEmpty()) {
+		if(!imageFile.isEmpty()) {
 			String imageName  = imageFile.getOriginalFilename();
 			String hashedImageName = generateNewFileName(imageName);
 			Path filePath = Paths.get("src/main/resources/static/storage/" + hashedImageName);

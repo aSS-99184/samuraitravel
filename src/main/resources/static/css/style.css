@@ -47,8 +47,7 @@ footer {
 }
 
 .samuraitravel-logo {
-	background-color: #5196a6 !important;
-	transition: 0.1s;
+	height: 30px;
 }
 
 .samuraitravel-btn {
@@ -74,6 +73,7 @@ footer {
 }
 
 .samuraitravel-pre-wrap {
+	/* 改行文字で行を折り返す */
 	white-space:pre-wrap;
 }
 

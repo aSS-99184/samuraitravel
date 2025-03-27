@@ -23,7 +23,7 @@ public class HouseRegisterForm {
 	private Integer price;
 	
 	@NotNull(message ="定員を入力してください。" )
-	@Min(value = 1, message="定員は１人以上に設定してください。")
+	@Min(value = 1, message="定員は1人以上に設定してください。")
 	private Integer capacity;
 	
 	@NotBlank(message = "郵便番号を入力してください。")

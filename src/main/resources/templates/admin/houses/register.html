@@ -28,11 +28,11 @@
 							<form method="post" th:action="@{/admin/houses/create}" th:object="${houseRegisterForm}" enctype="multipart/form-data">
 								<div class="form-group row mb-3">
 									<div class="col-md-4">
-										<lable for="name" class="col-form-label text-md-left fw-bold">民宿名</lable>
+										<label for="name" class="col-form-label text-md-left fw-bold">民宿名</label>
 									</div>
 									<div class="col-md-8">
 										<div th:if="${#fields.hasErrors('name')}" class="text-danger small mb-2" th:errors="*{name}"></div>
-										<input type="text" class="form-control" th:field="*{name}" autofoucus>							
+										<input type="text" class="form-control" th:field="*{name}" autofocus>							
 									</div>
 								</div>
 								
@@ -122,7 +122,7 @@
 			<div th:replace="~{fragment :: footer}"></div>
 		</div>
 		
-		<div th:reolace="~{fragment :: footer}"></div>
+		<div th:replace="~{fragment :: scripts}"></div>
 		<script th:src="@{/js/preview.js}"></script>
 	</body>
 </html>
