@@ -92,7 +92,7 @@ public class StripeService{
 		() -> {
 			System.out.println("予約一覧ページの登録処理が失敗しました。");
 			System.out.println("Stripe API Version: " + event.getApiVersion());
-			System.out.println("stripe-java version:" + Stripe.VERSION);
+			System.out.println("stripe-java Version:" + Stripe.VERSION);
 		});
 	} 
 }
