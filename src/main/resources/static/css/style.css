@@ -60,11 +60,11 @@ footer {
 }
 
 .samuraitravel-page-link {
-	color: #5196a6
+	color: #5196a6;
 }
 
 .samuraitravel-page-link:hover {
-	color: #407784
+	color: #407784;
 }
 
 .samuraitravel-active {
@@ -95,7 +95,7 @@ footer {
 }
 
 .samuraitravel-dropdown-item:active {
-	background-color:#5196a6
+	background-color:#5196a6;
 }
 
 .samuraitravel-card-link {
