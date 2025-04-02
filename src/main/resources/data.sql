@@ -86,17 +86,3 @@ INSERT IGNORE INTO reservations (id, house_id, user_id, checkin_date, checkout_d
 INSERT IGNORE INTO reservations (id, house_id, user_id, checkin_date, checkout_date, number_of_people, amount) VALUES (9, 9, 1, '2023-04-01', '2023-04-02', 5, 9000);
 INSERT IGNORE INTO reservations (id, house_id, user_id, checkin_date, checkout_date, number_of_people, amount) VALUES (10, 10, 1, '2023-04-01', '2023-04-02', 6, 10000);
 INSERT IGNORE INTO reservations (id, house_id, user_id, checkin_date, checkout_date, number_of_people, amount) VALUES (11, 11, 1, '2023-04-01', '2023-04-02', 2, 6000);
-
--- reviewsテーブル
-INSERT IGNORE INTO revies (id, name, rating, updater_at, comment) VALUES(1, '侍 太郎', 5, '2023-04-17', '素晴らしい滞在でした。また利用したいです。');
-INSERT IGNORE INTO revies (id, name, rating, updater_at, comment) VALUES(2, '侍 花子', 4, '2023-04-17', '部屋が綺麗で快適に過ごせました。');
-INSERT IGNORE INTO revies (id, name, rating, updater_at, comment) VALUES(3, '侍 義勝', 4, '2023-04-17', 'アクセスが良く、観光に最適でした。');
-INSERT IGNORE INTO revies (id, name, rating, updater_at, comment) VALUES(4, '侍 幸美', 5, '2023-04-17', 'スタッフが親切で、気持ちよく滞在できました。');
-INSERT IGNORE INTO revies (id, name, rating, updater_at, comment) VALUES(5, '侍 雅', 4, '2023-04-17', '駅から近く、便利でした。');
-INSERT IGNORE INTO revies (id, name, rating, updater_at, comment) VALUES(6, '侍 正保', 5, '2023-04-17', '周辺の飲食店が充実していて、楽しめました。');
-INSERT IGNORE INTO revies (id, name, rating, updater_at, comment) VALUES(7, '侍 真由美' 4, '2023-04-17', '宿泊費が手ごろで、コストパフォーマンスがよかったです。');
-INSERT IGNORE INTO revies (id, name, rating, updater_at, comment) VALUES(8, '侍 安民', 3, '2023-04-17', '静かな環境でゆっくり休めました。');
-INSERT IGNORE INTO revies (id, name, rating, updater_at, comment) VALUES(9, '侍 章緒', 4, '2023-04-17', '施設内の設備が充実していました。');
-INSERT IGNORE INTO revies (id, name, rating, updater_at, comment) VALUES(10, '侍 祐子', 5, '2023-04-17', 'Wi-Fiが快適で助かりました。');
-INSERT IGNORE INTO revies (id, name, rating, updater_at, comment) VALUES(11, '侍 秋美', 4, '2023-04-17', '清潔感があり、気持ちよく滞在できました。');
-INSERT IGNORE INTO revies (id, name, rating, updater_at, comment) VALUES(12, '侍 信平', 3, '2023-04-17', '素晴らしい滞在でした。また利用したいです。');
