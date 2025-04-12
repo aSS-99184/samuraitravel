@@ -30,7 +30,7 @@
 								
 								<!-- お気に入りセクション -->
 								<!-- ログインしているユーザーがセクションを見れるようにする -->
-								<div sec:authrize="isAuthenticated()">
+								<div sec:authorize="isAuthenticated()">
 									<!-- ユーザーがすでにお気に入り登録している場合 -->
 									<div th:if="${isFavorite}">
 										<!-- お気に入り解除ボタン -->
@@ -182,13 +182,12 @@
 										<a th:href="@{/houses/__${house.id}__/reviews/register}" class="btn text-white shadow-sm w-100 samuraitravel-btn">レビューを投稿する</a>
 									</div>
 								</div>
-								<!-- 指定した民宿詳細ページにまだレビューが１件もない場合の表示する(HouseControllerのshowメソッド) -->
-								<div th:if="${newReviews != null && newReviews.isEmpty()}" class="mb-4">
+								<!-- 指定した民宿詳細ページにまだレビューが１件もない場合(newReviewが空なら)表示する -->
+								<div th:if="${#lists.isEmpty(newReviews)}" class="mb-4">
 									<p class="text-center">まだレビューがありません。</p>
 								</div>
 								<!-- 指定した民宿詳細ページにレビューが１件でもあれば、レビューを小さい画面なら１列、中くらい以上の画面になると２列で表示する-->
-								<!-- newReviews が null であってもエラーを回避できる -->
-								<div th:unless="${newReviews.isEmpty()}" class="row row-cols-1 row-cols-md-2 g-4 mb-4">
+								<div th:unless="${#lists.isEmpty(newReviews)}" class="row row-cols-1 row-cols-md-2 g-4 mb-4">
 									<div th:each="review : ${newReviews}">
 										<div class="col">
 											<div class="card">
@@ -203,42 +202,42 @@
 															<a th:href="@{/houses/__${house.id}__/reviews/__${review.id}__/edit}" class="me-2">編集</a>
 															<!-- 削除をクリックするとモーダルを表示する -->
 															<a href="#" class="samuraitravel-link-danger"data-bs-toggle="modal" th:data-bs-target="${'#deleteReviewModal' + review.id}">削除</a>
-																<!-- 削除用モーダル -->
-																<div class="modal fade" th:id="${'deleteReviewModal' + review.getId()}" tabindex="-1" th:aria-labelledby="${'deleteReviewModalLabel' + review.getId()}">
-																	<div class="modal-dialog">
-																		<div class="modal-content">
-																			<div class="modal-header">
-																				<!-- モーダルのタイトル -->
-																				<h5 class="modal-title" th:id="${'deleteReviewModalLabel' + review.id}" th:text="${house.name + 'のレビューを削除してもよろしいですか？'}"></h5>
-																				<!-- モーダルを閉じるボタン -->
-																				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
-																			</div>
-																			<div class="modal-footer">											
-																				<!-- 削除ボタン -->
-																				<form method="post"th:action="@{/houses/__${house.id}__/reviews/__${review.id}__/delete}">
-																					<button type="submit" class="btn samuraitravel-btn-danger text-white shadow-sm">削除</button>
-																				</form>																				
-																			</div>
+															<!-- 削除用モーダル -->
+															<div class="modal fade" th:id="${'deleteReviewModal' + review.Id()}" tabindex="-1" th:aria-labelledby="${'deleteReviewModalLabel' + review.Id()}">
+																<div class="modal-dialog">
+																	<div class="modal-content">
+																		<div class="modal-header">
+																			<!-- モーダルのタイトル -->
+																			<h5 class="modal-title" th:id="${'deleteReviewModalLabel' + review.id}" th:text="${house.name + 'のレビューを削除してもよろしいですか？'}"></h5>
+																			<!-- モーダルを閉じるボタン -->
+																			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+																		</div>
+																		<div class="modal-footer">											
+																			<!-- 削除ボタン -->
+																			<form method="post"th:action="@{/houses/__${house.id}__/reviews/__${review.id}__/delete}">
+																				<button type="submit" class="btn samuraitravel-btn-danger text-white shadow-sm">削除</button>
+																			</form>																				
 																		</div>
 																	</div>
 																</div>
-															</span>
-														</div>
-														<!-- レビューの評価 -->
-														<p class="card-text mb-1">
-															<!-- 5つの星のループ、 評価された星(true)なら塗りつぶされる-->
-															<span class="rating" th:each="i : ${#numbers.sequence(1,5)}" th:text="${i <=  review.score} ? '&#9733;' : '&#9734;'"></span>  
-														</p>														
-														<!-- レビューの作成日(小さめ、薄色文字) -->														
-														<p class="card-text"><small class="text-muted" th:text="${#dates.format(review.createdAt, 'yyyy年MM月dd日')}"></small></p> 
-														<!-- レビュー内容を表示する(Reviewクラス内で定義されているcommentフィールドから参照) -->	
-														<p class="card-text" th:text="${review.comment}"></p>
+															</div>
+														</span>
 													</div>
+													<!-- レビューの評価 -->
+													<p class="card-text mb-1">
+														<!-- 5つの星のループ、 評価された星(true)なら塗りつぶされる-->
+														<span class="rating" th:each="i : ${#numbers.sequence(1,5)}" th:text="${i <=  review.score} ? '&#9733;' : '&#9734;'"></span>  
+													</p>														
+													<!-- レビューの作成日(小さめ、薄色文字) -->														
+													<p class="card-text"><small class="text-muted" th:text="${#dates.format(review.createdAt, 'yyyy年MM月dd日')}"></small></p> 
+													<!-- レビュー内容を表示する(Reviewクラス内で定義されているcommentフィールドから参照) -->	
+													<p class="card-text" th:text="${review.comment}"></p>
 												</div>
 											</div>
 										</div>
 									</div>
-								</div>							
+								</div>
+							</div>							
 								<!-- レビューが6件を超えている場合に「すべてのレビューを見る」リンクを表示 -->
 								<div class="text-center mb-4" th:if="${totalReviewCount > 6}">
 									<!-- 「すべてのレビューを見る」をクリックしたら、その民宿(house.id)のレビューが一覧で表示されているページに移る -->

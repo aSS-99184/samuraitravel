@@ -88,14 +88,14 @@
 											<span th:if="${reviewPage.isFirst()}" class="page-link disabled">前</span>
 											<!-- 最初のページではないなら「前」ボタンをクリック可能にする-->
 											<!-- pageパラメータに「現在のページ - 1」を渡すことで、1つ前のページに戻れる -->
-											<a th:unless="${reviewPage.isFirst()}" th:href="@{/houses/{houseId}/reviews(page=${reviewPage.getNumber() - 1})}" th:replace="__${house.id}__" class="page-link samuraitravel-page-link">前</a>
+											<a th:unless="${reviewPage.isFirst()}"th:href="@{/houses/__${house.id}__/reviews(page = ${reviewPage.getNumber() - 1})}" class="page-link samuraitravel-page-link">前</a>
 										</li>
 										<!-- ページのリンクリスト (0から総ページ-1） -->
 										<li th:each="i : ${#numbers.sequence(0, reviewPage.getTotalPages() - 1)}" class="page-item">
 											<!-- 現在のページなら(ページ番号iと現在のページが一致していたら) リンクを表示しない(アクティブページにする)-->
 											<span th:if="${i == reviewPage.getNumber()}" class="page-link active samuraitravel-active" th:text="${i + 1}"></span>
 											<!-- 現在ページではないなら、リンクページ番号を表示する -->
-											<a th:unless="${i == reviewPage.getNumber()}" th:href="@{/houses/{houseId}/reviews(page=${i})}" th:replace="__${house.id}__" class="page-link samuraitravel-page-link" th:text="${i + 1}"></a>
+											<a th:unless="${i == reviewPage.getNumber()}" th:href="@{/houses/__${house.id}__/reviews(page = ${i})}" class="page-link samuraitravel-page-link" th:text="${i + 1}"></a>
 										</li>
 										
 										<!-- 次ページボタン -->
@@ -104,7 +104,7 @@
 											<span th:if="${reviewPage.isLast()}" class="page-link disabled">次</span>
 											<!-- 最後のページではないなら「次」ボタンをクリック可能にする-->
 											<!-- pageパラメータに「現在のページ + 1」を渡すことで、1つ後のページにいける -->
-											<a th:unless="${reviewPage.isLast()}" th:href="@{/houses/{houseId}/reviews(page=${reviewPage.getNumber() + 1})}" th:replace="__${house.id}__" class="page-link samuraitravel-page-link">次</a>
+											<a th:unless="${reviewPage.isLast()}" th:href="@{/houses/__${house.id}__/reviews(page = ${reviewPage.getNumber() + 1})}" class="page-link samuraitravel-page-link">次</a>
 										</li>
 									</ul>
 								</nav>

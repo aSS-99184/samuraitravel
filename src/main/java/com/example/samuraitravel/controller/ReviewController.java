@@ -187,7 +187,7 @@ public class ReviewController {
 			// 民宿が見つからなければエラーメッセージを表示
 			if(optionalHouse.isEmpty()) {
 				redirectAttributes.addFlashAttribute("errorMessage", "指定された民宿は存在しません。");
-				// もう一度編集フォーム画面を出す
+				
 				return "redirect:/houses/{houseId}";
 
 			}
