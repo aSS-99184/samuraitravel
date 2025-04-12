@@ -5,8 +5,8 @@
 		
 		<div th:replace="~{fragment :: styles}"></div>
 		
-		<!-- Flatpickr -->
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+		 <!-- Flatpickr -->
+		 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 		
 		<title>民宿詳細</title>
 	</head>
@@ -19,15 +19,41 @@
 				<div class="container pt-4 pb-5 samuraitravel-container">
 					<div class="row justify-content-center">
 						<div class="col-xxl-9 col-xl-10 col-lg-11">
-							<nav class="mb-4" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-								<ol class="breadcrumb mb-0">
-									<li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
-									<li class="breadcrumb-item"><a th:href="@{/houses}">民宿一覧</a></li>
-									<li class="breadcrumb-item active" aria-current="page">民宿詳細</li>
-								</ol>
-							</nav>
+							<div class="d-flex justify-content-between mb-4">
+								<nav class="mb-4" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+									<ol class="breadcrumb mb-0">
+										<li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
+										<li class="breadcrumb-item"><a th:href="@{/houses}">民宿一覧</a></li>
+										<li class="breadcrumb-item active" aria-current="page">民宿詳細</li>
+									</ol>
+								</nav>
+								
+								<!-- お気に入りセクション -->
+								<!-- ログインしているユーザーがセクションを見れるようにする -->
+								<div sec:authrize="isAuthenticated()">
+									<!-- ユーザーがすでにお気に入り登録している場合 -->
+									<div th:if="${isFavorite}">
+										<!-- お気に入り解除ボタン -->
+										<a href="#" onclick="event.preventDefault(); document.getElementById('favorite-form').submit();">&#9829; お気に入り解除</a>
+										<!-- お気に入り解除のためのフォーム -->
+										<form method="post" th:action="@{/houses/__${house.id}__/favorites/__${favorite.id}__/delete}" id="favorite-form" class="d-none"></form>
+									</div>
+									
+									<!-- ユーザーがすでにお気に入り登録していない場合 -->
+									<div th:unless="${isFavorite}">
+										<!-- お気に入り追加ボタン -->
+										<a href="#" onclick="event.preventDefault(); document.getElementById('favorite-form').submit();">&#9825; お気に入り追加</a>
+										<!-- お気に入り追加のためのフォーム -->
+										<form method="post" th:action="@{/houses/__${house.id}__/favorites/create}" id="favorite-form" class="d-none"></form>
+									</div>
+								</div>
+							</div>
 							
-							<h1 class="mb-4 text-center" th:text="${house.getName()}"></h1>
+							<h1 class="mb-4 text-center" th:text="${house.getName()}"></h1>							
+							
+							<div th:if="${successMessage}" class="alert alert-info">
+								<span th:text="${successMessage}"></span>
+							</div>
 							
 							<div th:if="${errorMessage}" class="alert alert-danger">
 								<span th:text="${errorMessage}"></span>
@@ -145,21 +171,94 @@
 										</div>
 									</div>									
 								</div>
-							</div>					
-						</div>
+							</div>
+							
+							<!-- レビューセクション -->					
+							<div class = "container px-0">
+								<h2 class="mb-4 text-center">レビュー</h2>
+								<!-- ログインしているユーザーがレビューを投稿していない場合にのみ「レビューを投稿する」のボタンを表示する -->
+								<div sec:authorize="isAuthenticated()" th:unless="${hasUserAlreadyReviewed}" class="row justify-content-center mb-4">
+									<div class="col-lg-4">
+										<a th:href="@{/houses/__${house.id}__/reviews/register}" class="btn text-white shadow-sm w-100 samuraitravel-btn">レビューを投稿する</a>
+									</div>
+								</div>
+								<!-- 指定した民宿詳細ページにまだレビューが１件もない場合の表示する(HouseControllerのshowメソッド) -->
+								<div th:if="${newReviews != null && newReviews.isEmpty()}" class="mb-4">
+									<p class="text-center">まだレビューがありません。</p>
+								</div>
+								<!-- 指定した民宿詳細ページにレビューが１件でもあれば、レビューを小さい画面なら１列、中くらい以上の画面になると２列で表示する-->
+								<!-- newReviews が null であってもエラーを回避できる -->
+								<div th:unless="${newReviews.isEmpty()}" class="row row-cols-1 row-cols-md-2 g-4 mb-4">
+									<div th:each="review : ${newReviews}">
+										<div class="col">
+											<div class="card">
+												<div class="card-body">
+													<!-- 左右配置、両端ぞろえ -->
+													<div class="d-flex justify-content-between">
+														<!-- カードタイトル(何という名前のユーザーが書いたレビューか -->
+														<h5 class="card-title" th:text="${review.user.name}"></h5>
+														<!-- 現在ログインしているユーザーとそのレビューの投稿者が一致すれば編集・削除を表示する -->
+														<span sec:authorize="isAuthenticated()" th:if="${#authentication.principal.user.id == review.user.id}">	
+															<!-- 編集リンクをクリックするとレビューの編集ページに移動する(編集にはどの民宿かレビューかをURLが識別必要) -->														
+															<a th:href="@{/houses/__${house.id}__/reviews/__${review.id}__/edit}" class="me-2">編集</a>
+															<!-- 削除をクリックするとモーダルを表示する -->
+															<a href="#" class="samuraitravel-link-danger"data-bs-toggle="modal" th:data-bs-target="${'#deleteReviewModal' + review.id}">削除</a>
+																<!-- 削除用モーダル -->
+																<div class="modal fade" th:id="${'deleteReviewModal' + review.getId()}" tabindex="-1" th:aria-labelledby="${'deleteReviewModalLabel' + review.getId()}">
+																	<div class="modal-dialog">
+																		<div class="modal-content">
+																			<div class="modal-header">
+																				<!-- モーダルのタイトル -->
+																				<h5 class="modal-title" th:id="${'deleteReviewModalLabel' + review.id}" th:text="${house.name + 'のレビューを削除してもよろしいですか？'}"></h5>
+																				<!-- モーダルを閉じるボタン -->
+																				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+																			</div>
+																			<div class="modal-footer">											
+																				<!-- 削除ボタン -->
+																				<form method="post"th:action="@{/houses/__${house.id}__/reviews/__${review.id}__/delete}">
+																					<button type="submit" class="btn samuraitravel-btn-danger text-white shadow-sm">削除</button>
+																				</form>																				
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</span>
+														</div>
+														<!-- レビューの評価 -->
+														<p class="card-text mb-1">
+															<!-- 5つの星のループ、 評価された星(true)なら塗りつぶされる-->
+															<span class="rating" th:each="i : ${#numbers.sequence(1,5)}" th:text="${i <=  review.score} ? '&#9733;' : '&#9734;'"></span>  
+														</p>														
+														<!-- レビューの作成日(小さめ、薄色文字) -->														
+														<p class="card-text"><small class="text-muted" th:text="${#dates.format(review.createdAt, 'yyyy年MM月dd日')}"></small></p> 
+														<!-- レビュー内容を表示する(Reviewクラス内で定義されているcommentフィールドから参照) -->	
+														<p class="card-text" th:text="${review.comment}"></p>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>							
+								<!-- レビューが6件を超えている場合に「すべてのレビューを見る」リンクを表示 -->
+								<div class="text-center mb-4" th:if="${totalReviewCount > 6}">
+									<!-- 「すべてのレビューを見る」をクリックしたら、その民宿(house.id)のレビューが一覧で表示されているページに移る -->
+									<a th:href="@{/houses/__${house.id}__/reviews}">すべてのレビューを見る</a>
+								</div>									
+							</div>							
+						</div>										
 					</div>
 				</div>
 			</main>
-			
+				
 			<!-- フッター -->
 			<div th:replace="~{fragment :: footer}"></div>
 		</div>
-		
+				
 		<div th:replace="~{fragment :: scripts}"></div>
-		
-		<!-- Flatpickr -->
-		<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-		<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
-		<script th:src="@{/js/flatpickr.js}"></script>
+	
+		 <!-- Flatpickr -->
+		 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+		 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
+		 <script th:src="@{/js/flatpickr.js}"></script>
 	</body>
 </html>

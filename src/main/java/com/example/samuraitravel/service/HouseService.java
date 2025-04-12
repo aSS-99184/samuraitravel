@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -71,6 +72,10 @@ public class HouseService {
 		houseRepository.save(house);
 	}
 	
+	public Optional<House> findHouseById(Integer id) {
+		return houseRepository.findById(id);
+	}
+	
 	// UUIDを使って生成したファイル名を返す
 	public String generateNewFileName(String fileName) {
 		String[] fileNames = fileName.split("\\.");
@@ -90,4 +95,5 @@ public class HouseService {
 			e.printStackTrace();
 		}
 	}
+
 }
