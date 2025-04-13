@@ -53,15 +53,17 @@ public class ReviewController {
 		
 		// HouseServiceから民宿情報を取得する。
 		Optional<House> optionalHouse = houseService.findHouseById(houseId);
+		
 		// 民宿情報が存在しないならエラーを表示して民宿一覧に戻る
 		if (optionalHouse.isEmpty()) {
 			redirectAttributes.addFlashAttribute("errorMessage","指定された民宿は存在しません。");
 			return "redirect:/houses";
 		}
 		
+		// もし、optionalHouseに値が入っている場合はget()でその値を取り出す
 		House house = optionalHouse.get();
 		
-		// ある民宿のレビューを新しい順に取得する
+		// 特定の民宿のレビューを作成日の新しい順に取得する
 		Page<Review> reviewPage = reviewService.findReviewsByHouseOrderByCreatedAtDesc(house, pageable);
 		
 		// 民宿とレビューの情報をビュー(HTMLテンプレート)に渡す
@@ -73,12 +75,14 @@ public class ReviewController {
 			
 	}
 	
-	// レビュー投稿ページを表示する
+	// 新規レビュー投稿ページを表示する
 	@GetMapping("/register")
-	public String register(@PathVariable(name = "houseId")Integer houseId, RedirectAttributes redirectAttributes, Model model)
-	{
+	public String register(@PathVariable(name = "houseId")Integer houseId, RedirectAttributes redirectAttributes, Model model){
+		
+		// HouseServiceから民宿情報を取得する。
 		Optional<House> optionalHouse = houseService.findHouseById(houseId);
 		
+		// 民宿情報が存在しないならエラーを表示して民宿一覧に戻る
 		if (optionalHouse.isEmpty()) {		
 			redirectAttributes.addFlashAttribute("errorMessage","指定された民宿は存在しません。");
 
@@ -98,69 +102,68 @@ public class ReviewController {
 	// 新しいレビューを登録する
 	@PostMapping("/create")
 	public String createReview(@PathVariable(name = "houseId")Integer houseId, 
-								@ModelAttribute @Validated ReviewRegisterForm reviewResisterForm, BindingResult bindingResult, RedirectAttributes redirectAttributes,								
+								@ModelAttribute @Validated ReviewRegisterForm reviewRegisterForm, BindingResult bindingResult, RedirectAttributes redirectAttributes,								
 								@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,Model model){
-		
-		// 入力エラーのチェック
-		if(bindingResult.hasErrors()) {
-			Optional<House> optionalHouse = houseService.findHouseById(houseId);
-			if(optionalHouse.isPresent()) {
-				model.addAttribute("house", optionalHouse.get());
-			}
-			return "reviews/register";
-		}
 		
 		Optional<House> optionalHouse = houseService.findHouseById(houseId);
 		if (optionalHouse.isEmpty()) {
-			redirectAttributes.addFlashAttribute("errorMessage","指定された民宿は存在しません。");
+			redirectAttributes.addFlashAttribute("errorMessage","指定された民宿が存在しません。");
 			return "redirect:/houses"; 
 		}
+		
 		House house = optionalHouse.get();
-		// 現在ログイン中のユーザーの情報を取得
+		
+		// 入力エラーのチェック
+		if(bindingResult.hasErrors()) {
+				model.addAttribute("house",house );
+				model.addAttribute("reviewRegisterForm", reviewRegisterForm);
+				
+				return "reviews/register";
+		}
+		
+		// レビューを書いたユーザーが誰か(ログイン中のユーザー)の情報を取得
 		User user = userDetailsImpl.getUser();
 		
-		// すでに同じユーザーが同じ民宿を投稿しているかチェック
-		Optional<Review> existingReview = reviewService.findReviewByHouseAndUser(house, user);
-		if (existingReview.isPresent()) {
-			redirectAttributes.addFlashAttribute("errorMessage", "すでにこの民宿にレビューを投稿しています。");
+		// どの民宿に対するレビューなのか、誰が投稿したのか関連付ける
+		reviewService.createReview(reviewRegisterForm, house, user);
+		redirectAttributes.addFlashAttribute("successMessage", "レビューを投稿しました。");
+		
 			return "redirect:/houses/{houseId}";
 		}
 		
-		// どの民宿に対するレビューなのか、誰が投稿したのか関連付ける
-		reviewService.createReview(reviewResisterForm, house, user);
-		redirectAttributes.addFlashAttribute("successMessage", "レビューを投稿しました。");
-		
-		return "redirect:/houses/{houseId}";
-	}
 	
 	// レビュー編集ページを表示する
 	@GetMapping("/{reviewId}/edit")
-	public String edit(@PathVariable(name = "houseId") Integer houseId,
+	public String editReview(@PathVariable(name = "houseId") Integer houseId,
 						@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
 						@PathVariable(name = "reviewId")Integer reviewId, RedirectAttributes redirectAttributes, Model model){
 		
-		// ReviewServiceを使って指定されたレビューIDを取得する。見つからない可能性もあるので、Optional で受け取る
+		// ReviewServiceを使って指定されたレビューIDを取得する。(見つからない可能性もあるので、Optional で受け取る)
 		Optional<Review>optionalReview = reviewService.findReviewById(reviewId);
+		// HouseServiceを使ってしてされた民宿IDを取得する。
+		Optional<House> optionalHouse  = houseService.findHouseById(houseId);
 		
-		// レビューが見つからない場合
-		if(!optionalReview.isPresent()) {
+		// レビューも民宿見つからない場合はエラーメッセージを表示する
+		if(!optionalReview.isPresent() || !optionalHouse.isPresent() ) {
 			redirectAttributes.addFlashAttribute("errorMessage", "指定されたページが見つかりません。");
 			return "redirect:/houses";
 		}	
 		// OptionalからReviewを取り出す
 		Review review = optionalReview.get();
 		
-		// ログイン中のユーザーとレビューのユーザーが一致するかチェック(ユーザーが自分のレビューしか更新できないようにする)
+		// ユーザーが投稿者本人かチェック
 		if(!review.getUser().getId().equals(userDetailsImpl.getUser().getId())) {
 			redirectAttributes.addFlashAttribute("errorMessage", "編集できません。");
 			return "redirect:/houses/{houseId}";
 					
 		}
 		
-		// 民宿ID, ユーザーID, 名前, 評価, コメント, 作成日
-		ReviewEditForm reviewEditForm = new ReviewEditForm(review.getHouse().getId(), review.getUser().getId(), review.getName(),  review.getRating(), review.getComment(), review.getCreatedAt());
+		// 編集フォーム、評価, コメント
+		ReviewEditForm reviewEditForm = new ReviewEditForm(review.getRating(), review.getComment());
 		
 		model.addAttribute("reviewEditForm", reviewEditForm);
+		model.addAttribute("review", review);
+		model.addAttribute("house", review.getHouse());
 		
 		return "reviews/edit";
 	}
@@ -172,66 +175,77 @@ public class ReviewController {
 								@AuthenticationPrincipal UserDetailsImpl userDetailsImpl, 
 								@ModelAttribute @Validated ReviewEditForm reviewEditForm, BindingResult bindingResult, RedirectAttributes redirectAttributes,Model model){
 		
-		// レビューを取得
-		Optional<Review> optionalReview = reviewService.findReviewById(reviewId);
-		// レビューがない場合
-		if (optionalReview.isEmpty()) {
-			// レビュー入力フォームで入力された内容を画面に表示するためmodelに追加
-			redirectAttributes.addFlashAttribute("errorMessage","指定されたページが見つかりません。" );
+		// ReviewServiceを使って指定されたレビューIDを取得する。(見つからない可能性もあるので、Optional で受け取る)
+		Optional<Review>optionalReview = reviewService.findReviewById(reviewId);
+		// HouseServiceを使ってしてされた民宿IDを取得する。
+		Optional<House> optionalHouse  = houseService.findHouseById(houseId);
+		
+		// レビューも民宿見つからない場合はエラーメッセージを表示する
+		if(!optionalReview.isPresent() || !optionalHouse.isPresent() ) {
+			redirectAttributes.addFlashAttribute("errorMessage", "指定されたページが見つかりません。");
 			return "redirect:/houses";
-		}		
-		// 編集フォームに入力ミスがあったら
-		if (bindingResult.hasErrors()) {			
-			// 再度民宿情報を取得
-			Optional<House> optionalHouse = houseService.findHouseById(houseId);
-			// 民宿が見つからなければエラーメッセージを表示
-			if(optionalHouse.isEmpty()) {
-				redirectAttributes.addFlashAttribute("errorMessage", "指定された民宿は存在しません。");
-				
-				return "redirect:/houses/{houseId}";
-
-			}
+		}	
 			
-			// 編集画面を表示するのに必要な民宿情報をビューに渡す
-			model.addAttribute("house", optionalHouse.get());
-			// レビュー編集フォーム(レビュー内容や評価など)の入力内容をビューに渡す
-			model.addAttribute("reviewEditForm",reviewEditForm);
-			
-			return "reviews/edit";
-		}
-				
 		Review review = optionalReview.get();
+		House house = optionalHouse.get();
 
-		// ログイン中のユーザーとレビューのユーザーが一致するかチェック(ユーザーが自分のレビューしか更新できないようにする)
+		// ログイン中のユーザーがレビュー投稿者かどうか確認する
 		if(!review.getUser().getId().equals(userDetailsImpl.getUser().getId())) {
 			redirectAttributes.addFlashAttribute("errorMessage", "更新できません");
 			return "redirect:/houses/{houseId}";
 					
-		}		
-		// レビュー情報の更新
-		reviewService.updateReview(reviewEditForm, review);
-		redirectAttributes.addFlashAttribute("successMessage", "レビュー情報を更新しました。");
+		}
 		
+		// 編集フォームに入力ミスがあったら
+		if (bindingResult.hasErrors()) {	
+			// この編集したい民宿の情報と
+			model.addAttribute("house", house);
+			// 編集したいレビュー情報と
+			model.addAttribute("review", review);
+			// 入力フォームのデータをビューに渡して
+			model.addAttribute("reviewEditForm", reviewEditForm);
+			// レビュー編集フォームに戻る
+			return "reviews/edit";
+		}
+		
+		// レビュー情報の編集を行う(フォームで編集した新しいレビュー内容と編集前の既存のレビューオブジェクト)
+		reviewService.updateReview(reviewEditForm, review);
+		// 編集成功メッセージを表示する
+		redirectAttributes.addFlashAttribute("successMessage", "レビュー情報を更新しました。");
+		// 民宿詳細ページにリダイレクト
 		return "redirect:/houses/{houseId}";
 	}
 	
 	// レビューを削除する
 	@PostMapping("/{reviewId}/delete")
 	public String deleteReview(@PathVariable(name = "houseId") Integer houseId,
-								@PathVariable(name = "reviewId")Integer reviewId, RedirectAttributes redirectAttributes) {
+								@PathVariable(name = "reviewId")Integer reviewId, 
+								@AuthenticationPrincipal UserDetailsImpl userDetailsImpl, RedirectAttributes redirectAttributes) {
+
+		// ReviewServiceを使って指定されたレビューIDを取得する。(見つからない可能性もあるので、Optional で受け取る)
 		Optional<Review>optionalReview = reviewService.findReviewById(reviewId);
+		// HouseServiceを使ってしてされた民宿IDを取得する。
+		Optional<House> optionalHouse  = houseService.findHouseById(houseId);
 		
-		if(!optionalReview.isPresent()) {
+		// レビューも民宿見つからない場合はエラーメッセージを表示する
+		if(!optionalReview.isPresent() || !optionalHouse.isPresent() ) {
 			redirectAttributes.addFlashAttribute("errorMessage", "指定されたページが見つかりません。");
-			return "redirect:/houses/{houseId}";
-		}
+			return "redirect:/houses";
+		}	
 		
 		Review review = optionalReview.get();
+
+		// ログイン中のユーザーがレビュー投稿者かどうか確認する
+		if(!review.getUser().getId().equals(userDetailsImpl.getUser().getId())) {
+			redirectAttributes.addFlashAttribute("errorMessage", "アクセスできません");
+			return "redirect:/houses/{houseId}";
+					
+		}
 		
-		reviewService.deleteReview(review);
-		
+		// レビューを削除する
+		reviewService.deleteReview(review);	
 		redirectAttributes.addFlashAttribute("successMessage", "レビューを削除しました。");
-		
+		// 民宿詳細ページにリダイレクト
 		return "redirect:/houses/{houseId}";		
 		
 	}

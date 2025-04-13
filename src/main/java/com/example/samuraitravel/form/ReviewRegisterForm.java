@@ -7,12 +7,6 @@ import lombok.Data;
 @Data
 public class ReviewRegisterForm {
 	
-	private Integer house;
-	
-	private Integer user;
-	
-	private String name;
-	
 	@NotNull(message = "評価を入力してください。")
 	private Integer rating;
 	

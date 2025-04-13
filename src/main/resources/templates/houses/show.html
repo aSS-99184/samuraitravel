@@ -49,7 +49,7 @@
 								</div>
 							</div>
 							
-							<h1 class="mb-4 text-center" th:text="${house.getName()}"></h1>							
+							<h1 class="mb-4 text-center" th:text="${house.name}"></h1>							
 							
 							<div th:if="${successMessage}" class="alert alert-info">
 								<span th:text="${successMessage}"></span>
@@ -60,8 +60,8 @@
 							</div>
 							
 							<div class="mb-4">
-								<img th:if="${house.getImageName()}" th:src="@{/storage/__${house.getImageName()}__}" class="w-100" alt="民宿画像">
-								<img th:unless="${house.getImageName()}" th:src="@{/images/noImage.png}" class="w-100" alt="NO IMAGE">
+								<img th:if="${house.imageName}" th:src="@{/storage/__${house.imageName}__}" class="w-100" alt="民宿画像">
+								<img th:unless="${house.imageName}" th:src="@{/images/noImage.png}" class="w-100" alt="NO IMAGE">
 							</div>
 							
 							<div class="container">
@@ -203,7 +203,7 @@
 															<!-- 削除をクリックするとモーダルを表示する -->
 															<a href="#" class="samuraitravel-link-danger"data-bs-toggle="modal" th:data-bs-target="${'#deleteReviewModal' + review.id}">削除</a>
 															<!-- 削除用モーダル -->
-															<div class="modal fade" th:id="${'deleteReviewModal' + review.Id()}" tabindex="-1" th:aria-labelledby="${'deleteReviewModalLabel' + review.Id()}">
+															<div class="modal fade" th:id="${'deleteReviewModal' + review.id}" tabindex="-1" th:aria-labelledby="${'deleteReviewModalLabel' + review.id}">
 																<div class="modal-dialog">
 																	<div class="modal-content">
 																		<div class="modal-header">
@@ -226,7 +226,7 @@
 													<!-- レビューの評価 -->
 													<p class="card-text mb-1">
 														<!-- 5つの星のループ、 評価された星(true)なら塗りつぶされる-->
-														<span class="rating" th:each="i : ${#numbers.sequence(1,5)}" th:text="${i <=  review.score} ? '&#9733;' : '&#9734;'"></span>  
+														<span th:each="i : ${#numbers.sequence(1, 5)}" th:class="${i <= review.rating} ? 'filled-star' : 'empty-star'" th:text="${i <= review.rating} ? '&#9733;' : '&#9734;'"></span>  
 													</p>														
 													<!-- レビューの作成日(小さめ、薄色文字) -->														
 													<p class="card-text"><small class="text-muted" th:text="${#dates.format(review.createdAt, 'yyyy年MM月dd日')}"></small></p> 

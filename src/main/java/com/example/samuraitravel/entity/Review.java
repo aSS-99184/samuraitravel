@@ -30,9 +30,6 @@ public class Review {
 	@JoinColumn(name = "user_id")
 	private User user;
 	
-	@Column(name = "name")
-	private String name;
-	
 	@Column(name = "rating")
 	private Integer rating;
 	

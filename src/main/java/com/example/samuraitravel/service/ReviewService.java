@@ -33,6 +33,7 @@ public class ReviewService {
 		review.setUser(user);
 		review.setRating(reviewRegisterForm.getRating());
 		review.setComment(reviewRegisterForm.getComment());
+		
 		// データベース(reviewsテーブル)にレビューを保存
 		reviewRepository.save(review);
 	}

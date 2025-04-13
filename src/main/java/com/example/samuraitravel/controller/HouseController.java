@@ -107,11 +107,8 @@ public class HouseController {
 		
 		// houseを使えるようにする
 		House house = optionalHouse.get();
-		
-		// 取得した民宿情報(house)をビューに渡すためにModelに追加する
-		model.addAttribute("house", house);
-		
 		boolean hasUserAlreadyReviewed = false; 
+		
 		Favorite favorite = null;
 		boolean isFavorite = false;
 		
@@ -120,22 +117,24 @@ public class HouseController {
 			User user = userDetailsImpl.getUser();
 			// そのユーザーのレビューがあるかどうかチェックする
 			hasUserAlreadyReviewed = reviewService.hasUserAlreadyReviewed(house, user);
-			// ユーザーがお気に入り追加しているかどうか
-			favorite = favoriteService.findFavoriteByHouseAndUser(house, user);
-			if (favorite != null) {
-				isFavorite = true;				
+			// ログインユーザーがその民宿をお気に入り登録しているかどうかチェック
+			isFavorite = favoriteService.isFavorite(house,user);
+			
+			if (isFavorite) {
+				favorite = favoriteService.findFavoriteByHouseAndUser(house, user);
 			} else {
-				isFavorite = false;
+				// ユーザーではない場合エラーを表示してログインページにリダイレクト
+				redirectAttributes.addFlashAttribute("error", "ログインが必要です。");
+				return "redirect:/login"; 
 			}
-		} else {
-			// ユーザーではない場合エラーを表示してログインページにリダイレクト
-			redirectAttributes.addFlashAttribute("error", "ログインが必要です。");
-			return "redirect:/login"; 
 		}
 
-		model.addAttribute("hasUserAlreadyReviewed", hasUserAlreadyReviewed);
 		model.addAttribute("favorite", favorite);
 		model.addAttribute("isFavorite", isFavorite);
+		// 取得した民宿情報(house)をビューに渡すためにModelに追加する
+		model.addAttribute("house", house);
+		model.addAttribute("hasUserAlreadyReviewed", hasUserAlreadyReviewed);
+
 		
 		// 特定の民宿に対する最新のレビュー6件だけを取得し、リスト形式で出力する。
 		// ページングが不要で6件固定のため戻り値にList<Review>を使う

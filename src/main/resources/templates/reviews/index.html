@@ -5,7 +5,7 @@
 		
 		<div th:replace="~{fragment :: styles}"></div>
 		
-		<title>SAMURAIの宿のレビュー一覧</title>	
+		<title>レビュー一覧</title>	
 	</head>
 	<body>
 		<div class="samuraitravel-wrapper">
@@ -20,64 +20,65 @@
 								<ol class="breadcrumb mb-0">
 									<li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
 									<li class="breadcrumb-item"><a th:href="@{/houses}">民宿一覧</a></li>
-									<li class="breadcrumb-item"><a th:href="@{/houses/__${house.id}__}"></a>民宿詳細</li>
+									<li class="breadcrumb-item"><a th:href="@{/houses/__${house.id}__}">民宿詳細</a></li>
 									<li class="breadcrumb-item active" aria-current="page">レビュー一覧</li>
 								</ol>
 							</nav>
 							
-							<h1 class="mb-4 text-center" th:text="${house.getName() + 'のレビュー一覧'}" ></h1>	
-								<!-- レビュ－一覧全体 -->
-								<div class="row row-cols-1 row-cols-md-2 g-4 mb-4">							
-										<div class="col">
-											<div class="card">
-												<div class="card-body">
-												<!-- 左右配置、両端ぞろえ -->
-												<div class="d-flex justify-content-between">
-													<!-- カードタイトル(何という名前のユーザーが書いたレビューか -->
-													<h5 class="card-title" th:text="${review.user.name}"></h5>
-													<!-- 現在ログインしているユーザーとそのレビューの投稿者が一致すれば編集・削除を表示する -->
-													<span sec:authorize="isAuthenticated()" th:if="${#authentication.principal.user.id == review.user.id}">	
-														<!-- 編集リンクをクリックするとレビューの編集ページに移動する(編集にはどの民宿かレビューかをURLが識別必要) -->														
-														<a th:href="@{/houses/__${house.id}__/reviews/__${review.id}__/edit}" class="me-2">編集</a>
-														<!-- 削除をクリックするとモーダルを表示する -->
-														<a href="#" class="samuraitravel-link-danger"data-bs-toggle="modal" th:data-bs-target="${'#deleteReviewModal' + review.id}">削除</a>
-														<!-- 削除用モーダル -->
-														<div class="modal fade" th:id="${'deleteReviewModal' + review.getId()}" tabindex="-1" th:aria-labelledby="${'deleteReviewModalLabel' + review.getId()}">
-															<div class="modal-dialog">
-																<div class="modal-content">
-																	<div class="modal-header">
-																		<!-- モーダルのタイトル -->
-																		<h5 class="modal-title" th:id="${'deleteReviewModalLabel' + review.id}" th:text="${house.name + 'のレビューを削除してもよろしいですか？'}"></h5>
-																		<!-- モーダルを閉じるボタン -->
-																		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
-																	</div>
-																	<div class="modal-footer">
-																		
-																		<!-- 削除ボタン -->
-																		<form method="post"th:action="@{/houses/__${house.id}__/reviews/__${review.id}__/delete}">
-																			<button type="submit" class="btn samuraitravel-btn-danger text-white shadow-sm">削除</button>
-																		</form>																				
-																	</div>
+							<h1 class="mb-4 text-center" th:text="${house.name + 'のレビュー一覧'}" ></h1>	
+							<!-- レビュ－一覧全体 -->
+							<div class="row row-cols-1 row-cols-md-2 g-4 mb-4">	
+								<div th:each="review : ${reviewPage}">						
+									<div class="col">
+										<div class="card">
+											<div class="card-body">
+											<!-- 左右配置、両端ぞろえ -->
+											<div class="d-flex justify-content-between">
+												<!-- カードタイトル(何という名前のユーザーが書いたレビューか -->
+												<h5 class="card-title" th:text="${review.user.name}"></h5>
+												<!-- 現在ログインしているユーザーとそのレビューの投稿者が一致すれば編集・削除を表示する -->
+												<span sec:authorize="isAuthenticated()" th:if="${#authentication.principal.user.id == review.user.id}">	
+													<!-- 編集リンクをクリックするとレビューの編集ページに移動する(編集にはどの民宿かレビューかをURLが識別必要) -->														
+													<a th:href="@{/houses/__${house.id}__/reviews/__${review.id}__/edit}" class="me-2">編集</a>
+													<!-- 削除をクリックするとモーダルを表示する -->
+													<a href="#" class="samuraitravel-link-danger"data-bs-toggle="modal" th:data-bs-target="${'#deleteReviewModal' + review.id}">削除</a>
+													<!-- 削除用モーダル -->
+													<div class="modal fade" th:id="${'deleteReviewModal' + review.id}" tabindex="-1" th:aria-labelledby="${'deleteReviewModalLabel' + review.Id}">
+														<div class="modal-dialog">
+															<div class="modal-content">
+																<div class="modal-header">
+																	<!-- モーダルのタイトル -->
+																	<h5 class="modal-title" th:id="${'deleteReviewModalLabel' + review.id}">レビューを削除してもよろしいですか？</h5>
+																	<!-- モーダルを閉じるボタン -->
+																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+																</div>
+																<div class="modal-footer">
+																	
+																	<!-- 削除ボタン -->
+																	<form method="post"th:action="@{/houses/__${house.id}__/reviews/__${review.id}__/delete}">
+																		<button type="submit" class="btn samuraitravel-btn-danger text-white shadow-sm">削除</button>
+																	</form>																				
 																</div>
 															</div>
 														</div>
-													</span>
-												</div>
-													<!-- レビューの評価 -->
-													<p class="card-text mb-1">
-														<!-- 5つの星のループ、 評価された星(true)なら塗りつぶされる-->
-														<span class="rating" th:each="i : ${#numbers.sequence(1,5)}" th:text="${i <=  review.score} ? '&#9733;' : '&#9734;'"></span>  
-													</p>														
-													<!-- レビューの作成日(小さめ、薄色文字) -->														
-													<p class="card-text"><small class="text-muted" th:text="${#dates.format(review.createdAt, 'yyyy年MM月dd日')}"></small></p> 
-													<!-- レビュー内容を表示する(Reviewクラス内で定義されているcommentフィールドから参照) -->	
-													<p class="card-text" th:text="${review.comment}"></p>
-												</div>
+													</div>
+												</span>
+											</div>
+												<!-- レビューの評価 -->
+												<p class="card-text mb-1">
+													<!-- 5つの星のループ、 評価された星(true)なら塗りつぶされる-->
+													<span th:each="i : ${#numbers.sequence(1, 5)}" th:class="${i <= review.rating} ? 'filled-star' : 'empty-star'" th:text="${i <= review.rating} ? '&#9733;' : '&#9734;'"></span> 
+												</p>														
+												<!-- レビューの作成日(小さめ、薄色文字) -->														
+												<p class="card-text"><small class="text-muted" th:text="${#dates.format(review.createdAt, 'yyyy年MM月dd日')}"></small></p> 
+												<!-- レビュー内容を表示する(Reviewクラス内で定義されているcommentフィールドから参照) -->	
+												<p class="card-text" th:text="${review.comment}"></p>
 											</div>
 										</div>
 									</div>
 								</div>
 							</div>
+							
 							<!-- ページネーション -->
 							<div th:if="${reviewPage.getTotalPages() > 1}" class="d-flex justify-content-center">
 								<nav aria-label="レビュー一覧ページ">

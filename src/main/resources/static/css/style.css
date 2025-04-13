@@ -133,8 +133,10 @@ footer {
 }
 
 /* 星評価部分のスタイリング */
+/* 左から色をつける */
 .samurai-rating{
-	display: inline-block;
+	display: inline-flex;
+	flex-direction: row-reverse;
 }
 
 .samurai-rating input[type="radio"]{
@@ -142,48 +144,32 @@ footer {
 	
 }
 
+/* 初期の星 */ 
 .samurai-rating label{
 	font-size: 2rem;
 	color: #ccc;
 	cursor: pointer;
 }
 
-/* チェックされたラジオボタン以降のすべてのラベルに色を適用 */
-.samurai-rating input[type="radio"]:checked ~ #star1 + label,
-.samurai-rating input[type="radio"]:checked ~ #star2 + label,
-.samurai-rating input[type="radio"]:checked ~ #star3 + label,
-.samurai-rating input[type="radio"]:checked ~ #star4 + label,
-.samurai-rating input[type="radio"]:checked ~ #star5 + label {
+.samurai-rating input[type="radio"]:checked ~ label {
 	color: #ffa500;
 }
 
-/* 1つ目の星 */
-.samurai-rating input[type="radio"]:checked ~ #star1 + label {
-	color: #ffa500;
-}
 
-/* 2つ目の星 */
-.samurai-rating input[type="radio"]:checked ~ #star2 + label {
-	color: #ffa500;
-}
-
-/* 3つ目の星 */
-.samurai-rating input[type="radio"]:checked ~ #star3 + label {
-	color: #ffa500;
-}
-
-/* 4つ目の星 */
-.samurai-rating input[type="radio"]:checked ~ #star4 + label {
-	color: #ffa500;
-}
-
-/* 5つ目の星 */
-.samurai-rating input[type="radio"]:checked ~ #star5 + label {
-	color: #ffa500;
-}
-
-/* 未選択の星 */
+/* 未選択の星は色をそのまま */
 .samurai-rating input[type="radio"]:not(:checked) + label {
+	color: #ccc;
+}
+
+.samurai-rating input[type="radio"]:checked ~ label {
+	color: #ffa500;
+}
+
+.filled-star{
+	color: #ffa500;
+}
+
+.empty-star {
 	color: #ccc;
 }
 
