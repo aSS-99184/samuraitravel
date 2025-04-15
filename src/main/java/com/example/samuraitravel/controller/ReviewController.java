@@ -122,8 +122,21 @@ public class ReviewController {
 		}
 		
 		// レビューを書いたユーザーが誰か(ログイン中のユーザー)の情報を取得
-		User user = userDetailsImpl.getUser();
+		User user = userDetailsImpl.getUser();	
 		
+		// ユーザーがすでにレビューしたかどうかチェックする
+		if(reviewService.hasUserAlreadyReviewed(house,user)) {
+			// 民宿と
+			model.addAttribute("house", house);
+			// 投稿フォーム情報と
+			model.addAttribute("reviewRegisterForm", reviewRegisterForm);
+			// エラーメッセージ
+			model.addAttribute("errorMessage", "すでにこの民宿にレビューを投稿済みです");
+			return "redirect:/houses/{houseId}";
+		}
+		
+		
+		// 新しいレビューを保存する
 		// どの民宿に対するレビューなのか、誰が投稿したのか関連付ける
 		reviewService.createReview(reviewRegisterForm, house, user);
 		redirectAttributes.addFlashAttribute("successMessage", "レビューを投稿しました。");
